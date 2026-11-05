@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="FocusFlow: a free Pomodoro study timer with a task manager, study planner, weekly analytics and daily progress tracking." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237c5cd6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='13' r='8'/%3E%3Cpath d='M12 9v4l2 2'/%3E%3Cpath d='M10 2h4'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <title>FocusFlow | Pomodoro Study Timer and Focus Task Manager</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Shared SVG icon sprite. Each icon is reused with <use href="#icon-name">. -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
+      <symbol id="icon-timer" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2 2" /><path d="M10 2h4" /></symbol>
+      <symbol id="icon-play" viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4" /></symbol>
+      <symbol id="icon-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></symbol>
+      <symbol id="icon-reset" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></symbol>
+      <symbol id="icon-skip" viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4" /><line x1="19" y1="5" x2="19" y2="19" /></symbol>
+      <symbol id="icon-sliders" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" /><line x1="12" y1="21" x2="12" y2="12" /><line x1="12" y1="8" x2="12" y2="3" /><line x1="20" y1="21" x2="20" y2="16" /><line x1="20" y1="12" x2="20" y2="3" /><line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line x1="17" y1="16" x2="23" y2="16" /></symbol>
+      <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M3 3v18h18" /><rect x="7" y="12" width="3" height="6" /><rect x="12" y="8" width="3" height="10" /><rect x="17" y="5" width="3" height="13" /></symbol>
+      <symbol id="icon-list" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></symbol>
+      <symbol id="icon-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></symbol>
+      <symbol id="icon-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" /></symbol>
+      <symbol id="icon-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></symbol>
+      <symbol id="icon-menu" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></symbol>
+      <symbol id="icon-coffee" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1" /><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" /><line x1="6" y1="1" x2="6" y2="4" /><line x1="10" y1="1" x2="10" y2="4" /><line x1="14" y1="1" x2="14" y2="4" /></symbol>
+      <symbol id="icon-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></symbol>
+      <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></symbol>
+      <symbol id="icon-trophy" viewBox="0 0 24 24"><path d="M8 21h8" /><path d="M12 17v4" /><path d="M7 4h10v5a5 5 0 0 1-10 0V4z" /><path d="M17 5h3v2a3 3 0 0 1-3 3" /><path d="M7 5H4v2a3 3 0 0 0 3 3" /></symbol>
+      <symbol id="icon-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></symbol>
+      <symbol id="icon-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></symbol>
+      <symbol id="icon-sparkles" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z" /><path d="M19 17l.7 1.8L21.5 19.5l-1.8.7L19 22l-.7-1.8-1.8-.7 1.8-.7z" /></symbol>
+      <symbol id="icon-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></symbol>
+      <symbol id="icon-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></symbol>
+      <symbol id="icon-volume" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /></symbol>
+      <symbol id="icon-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></symbol>
+      <symbol id="icon-refresh" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></symbol>
+      <symbol id="icon-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></symbol>
+    </svg>
+
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="#home" class="brand" aria-label="FocusFlow home">
+          <span class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#icon-timer" /></svg></span>
+          <span class="brand-text">
+            <span class="brand-name">FocusFlow</span>
+            <span class="brand-tagline">Pomodoro Study Timer</span>
+          </span>
+        </a>
+
+        <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mainNav" aria-label="Open menu">
+          <svg class="icon" aria-hidden="true"><use href="#icon-menu" /></svg>
+        </button>
+
+        <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+          <a href="#timer">Timer</a>
+          <a href="#tasks">Tasks</a>
+          <a href="#analytics">Analytics</a>
+          <a href="#planner">Planner</a>
+          <a href="#rewards">Rewards</a>
+          <a href="#motivation">Tips</a>
+          <a href="#about">About</a>
+        </nav>
+
+        <button type="button" class="btn btn-outline btn-sm header-settings" id="openSettingsBtn" aria-label="Timer settings">
+          <svg class="icon" aria-hidden="true"><use href="#icon-sliders" /></svg>
+          <span>Settings</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- Welcome hero -->
+      <section id="home" class="hero">
+        <div class="container hero-inner">
+          <div class="welcome-header">
+            <div class="welcome-text">
+              <span class="pill">
+                <svg class="icon" aria-hidden="true"><use href="#icon-sparkles" /></svg>
+                Focus Better. Study Smarter.
+              </span>
+              <h1 class="hero-title">Welcome to <span class="gradient-text">FocusFlow!</span></h1>
+              <p class="hero-sub">Your Pomodoro study timer, task manager and daily progress tracker in one place.</p>
+              <p class="hero-quote">
+                <svg class="icon" aria-hidden="true"><use href="#icon-sparkles" /></svg>
+                <span id="heroQuote">Small steps every day lead to big results.</span>
+              </p>
+            </div>
+
+            <div class="clock-card">
+              <span class="clock-greeting" id="greeting">Good morning</span>
+              <span class="clock-time" id="liveClock">--:--:--</span>
+              <span class="clock-date" id="liveDate">Loading today's date</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pomodoro timer and daily statistics -->
+      <section class="section dashboard-section" aria-label="Pomodoro timer and today's statistics">
+        <div class="container dashboard">
+          <div id="timer" class="card timer-card reveal" data-mode="focus">
+            <div class="card-header">
+              <span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#icon-timer" /></svg></span>
+              <div>
+                <h2 class="card-title">Pomodoro Timer</h2>
+                <p class="card-subtitle">Deep work first, then a well-earned break.</p>
+              </div>
+            </div>
+
+            <div class="mode-tabs" role="tablist" aria-label="Session type">
+              <button type="button" class="mode-tab is-active" role="tab" data-mode="focus" aria-selected="true">Focus</button>
+              <button type="button" class="mode-tab" role="tab" data-mode="shortBreak" aria-selected="false">Short Break</button>
+              <button type="button" class="mode-tab" role="tab" data-mode="longBreak" aria-selected="false">Long Break</button>
+            </div>
+
+            <div class="timer-dial">
+              <svg class="progress-ring" viewBox="0 0 280 280" aria-hidden="true">
+                <defs>
+                  <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color: var(--ring-start)" />
+                    <stop offset="100%" style="stop-color: var(--ring-end)" />
+                  </linearGradient>
+                </defs>
+                <circle class="ring-track" cx="140" cy="140" r="124" />
+                <circle class="ring-progress" id="ringProgress" cx="140" cy="140" r="124" />
+              </svg>
+              <div class="timer-readout">
+                <span class="timer-label" id="timerLabel">Focus Session</span>
+                <span class="timer-display" id="timerDisplay" role="timer">25:00</span>
+                <span class="timer-status" id="timerStatus">Press start when ready</span>
+              </div>
+            </div>
+
+            <div class="timer-controls">
+              <button type="button" class="btn btn-primary timer-btn" id="startBtn">
+                <svg class="icon" aria-hidden="true"><use href="#icon-play" /></svg>
+                <span>Start</span>
+              </button>
+              <button type="button" class="btn timer-btn timer-btn-soft" id="pauseBtn" disabled>
+                <svg class="icon" aria-hidden="true"><use href="#icon-pause" /></svg>
+                <span>Pause</span>
+              </button>
+              <button type="button" class="btn timer-btn timer-btn-soft" id="resetBtn">
+                <svg class="icon" aria-hidden="true"><use href="#icon-reset" /></svg>
+                <span>Reset</span>
+              </button>
+              <button type="button" class="btn timer-btn timer-btn-soft" id="skipBtn">
+                <svg class="icon" aria-hidden="true"><use href="#icon-skip" /></svg>
+                <span>Skip</span>
+              </button>
+            </div>
+
+            <p class="timer-footnote" id="cycleInfo">0 of 4 focus sessions completed in this cycle</p>
+            <p class="timer-hint">Press <kbd>Space</kbd> to start or pause. Only one timer runs at a time.</p>
+          </div>
+
+          <aside class="stack" aria-label="Your statistics">
+            <div id="progress" class="card stats-card reveal">
+              <div class="card-header card-header-split">
+                <div class="card-header-left">
+                  <span class="card-icon card-icon-blue"><svg class="icon" aria-hidden="true"><use href="#icon-chart" /></svg></span>
+                  <div>
+                    <h2 class="card-title">Today's Statistics</h2>
+                    <p class="card-subtitle">Resets automatically at midnight.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="metric-grid">
+                <div class="metric-card metric-lavender">
+                  <span class="metric-icon"><svg class="icon" aria-hidden="true"><use href="#icon-timer" /></svg></span>
+                  <span class="metric-value" id="todaySessions">0</span>
+                  <span class="metric-label">Pomodoro Sessions</span>
+                  <span class="metric-note">Completed today</span>
+                </div>
+                <div class="metric-card metric-pink">
+                  <span class="metric-icon"><svg class="icon" aria-hidden="true"><use href="#icon-clock" /></svg></span>
+                  <span class="metric-value" id="todayMinutes">0m</span>
+                  <span class="metric-label">Total Focus Time</span>
+                  <span class="metric-note">Focused today</span>
+                </div>
+                <div class="metric-card metric-peach">
+                  <span class="metric-icon"><svg class="icon" aria-hidden="true"><use href="#icon-target" /></svg></span>
+                  <span class="metric-value" id="goalTarget">8</span>
+                  <span class="metric-label">Daily Study Goal</span>
+                  <span class="metric-note">Sessions per day</span>
+                </div>
+                <div class="metric-card metric-sky">
+                  <span class="metric-icon"><svg class="icon" aria-hidden="true"><use href="#icon-check" /></svg></span>
+                  <span class="metric-value" id="statCompletedTasks">0</span>
+                  <span class="metric-label">Completed Tasks</span>
+                  <span class="metric-note">In your task list</span>
+                </div>
+              </div>
+
+              <div class="goal-block">
+                <div class="goal-head">
+                  <div>
+                    <span class="goal-title">Daily progress</span>
+                    <span class="goal-text" id="goalText">0 / 8 sessions</span>
+                  </div>
+                  <span class="goal-percent" id="goalPercent">0%</span>
+                </div>
+                <div class="progress-bar" role="progressbar" aria-label="Daily goal progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="goalBar">
+                  <div class="progress-fill" id="goalFill"></div>
+                </div>
+                <ul class="milestone-list" id="goalMilestones" aria-label="Daily goal milestones"></ul>
+                <p class="goal-message" id="goalMessage"></p>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- Daily study tasks -->
+      <section id="tasks" class="section">
+        <div class="container">
+          <header class="section-heading reveal">
+            <span class="section-eyebrow">Daily Study Tasks</span>
+            <h2 class="section-title">Plan what you will study</h2>
+            <p class="section-description">Add tasks, set a priority and tick them off as you finish.</p>
+          </header>
+
+          <div class="card reveal">
+            <div class="card-header card-header-split">
+              <div class="card-header-left">
+                <span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#icon-book" /></svg></span>
+                <div>
+                  <h3 class="card-title">My study tasks</h3>
+                  <p class="card-subtitle">Saved in your browser.</p>
+                </div>
+              </div>
+              <span class="badge" id="taskSummary">0 pending</span>
+            </div>
+
+            <form id="taskForm" class="task-form" autocomplete="off">
+              <div class="task-form-input">
+                <label class="sr-only" for="taskInput">Task name</label>
+                <input id="taskInput" name="taskText" type="text" maxlength="120" placeholder="What do you want to study next?" />
+              </div>
+              <fieldset class="priority-picker">
+                <legend>Priority</legend>
+                <label class="priority-option">
+                  <input type="radio" name="priority" value="high" />
+                  <span class="tag tag-high">High</span>
+                </label>
+                <label class="priority-option">
+                  <input type="radio" name="priority" value="medium" checked />
+                  <span class="tag tag-medium">Medium</span>
+                </label>
+                <label class="priority-option">
+                  <input type="radio" name="priority" value="low" />
+                  <span class="tag tag-low">Low</span>
+                </label>
+              </fieldset>
+              <button type="submit" class="btn btn-primary">
+                <svg class="icon" aria-hidden="true"><use href="#icon-plus" /></svg>
+                <span>Add Task</span>
+              </button>
+              <p class="form-error" id="taskError" role="alert"></p>
+            </form>
+
+            <div class="list-columns">
+              <section class="list-column" aria-labelledby="pendingHeading">
+                <div class="column-head">
+                  <h4 id="pendingHeading" class="column-title">Pending <span class="count" id="pendingCount">0</span></h4>
+                </div>
+                <ul class="item-list" id="pendingList"></ul>
+                <p class="empty-state" id="pendingEmpty">No pending tasks. Add one above to plan your session.</p>
+              </section>
+
+              <section class="list-column" aria-labelledby="completedHeading">
+                <div class="column-head">
+                  <h4 id="completedHeading" class="column-title">Completed <span class="count" id="completedCount">0</span></h4>
+                  <button type="button" class="btn btn-text" id="clearCompletedBtn">Clear completed</button>
+                </div>
+                <ul class="item-list" id="completedList"></ul>
+                <p class="empty-state" id="completedEmpty">Tick a task to see it here.</p>
+              </section>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Weekly analytics -->
+      <section id="analytics" class="section">
+        <div class="container">
+          <header class="section-heading reveal">
+            <span class="section-eyebrow">Weekly Study Analytics</span>
+            <h2 class="section-title">This week at a glance</h2>
+            <p class="section-description">Your completed Pomodoro sessions from Monday to Sunday, from your own saved data.</p>
+          </header>
+
+          <div class="card reveal">
+            <div class="analytics-summary">
+              <div class="summary-chip">
+                <span class="summary-label">Sessions this week</span>
+                <span class="summary-value" id="weekTotal">0</span>
+              </div>
+              <div class="summary-chip">
+                <span class="summary-label">Focus time this week</span>
+                <span class="summary-value" id="weekMinutes">0m</span>
+              </div>
+              <div class="summary-chip">
+                <span class="summary-label">Best day</span>
+                <span class="summary-value" id="weekBest">None yet</span>
+              </div>
+            </div>
+
+            <div class="week-chart" id="weekChart"></div>
+            <p class="empty-state" id="weekEmpty">Complete a Pomodoro to start your chart.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Daily study planner -->
+      <section id="planner" class="section">
+        <div class="container">
+          <header class="section-heading reveal">
+            <span class="section-eyebrow">Daily Study Planner</span>
+            <h2 class="section-title">Build your timetable</h2>
+            <p class="section-description">Add subjects with a start time. Mark blocks done as you finish them.</p>
+          </header>
+
+          <div class="card reveal">
+            <form id="plannerForm" class="planner-form" autocomplete="off">
+              <div class="planner-field planner-field-subject">
+                <label for="plannerSubject">Subject or topic</label>
+                <input id="plannerSubject" name="subject" type="text" maxlength="80" placeholder="e.g. Calculus: integration" />
+              </div>
+              <div class="planner-field">
+                <label for="plannerTime">Start time</label>
+                <input id="plannerTime" name="time" type="time" />
+              </div>
+              <button type="submit" class="btn btn-primary">
+                <svg class="icon" aria-hidden="true"><use href="#icon-plus" /></svg>
+                <span>Add Block</span>
+              </button>
+              <p class="form-error" id="plannerError" role="alert"></p>
+            </form>
+
+            <div class="list-columns">
+              <section class="list-column" aria-labelledby="upcomingHeading">
+                <div class="column-head">
+                  <h4 id="upcomingHeading" class="column-title">Upcoming <span class="count" id="upcomingCount">0</span></h4>
+                </div>
+                <ul class="item-list" id="upcomingList"></ul>
+                <p class="empty-state" id="upcomingEmpty">No upcoming study blocks. Add a subject and time above.</p>
+              </section>
+
+              <section class="list-column" aria-labelledby="doneHeading">
+                <div class="column-head">
+                  <h4 id="doneHeading" class="column-title">Done <span class="count" id="doneCount">0</span></h4>
+                  <button type="button" class="btn btn-text" id="clearDoneBtn">Clear done</button>
+                </div>
+                <ul class="item-list" id="doneList"></ul>
+                <p class="empty-state" id="doneEmpty">Finished blocks will show up here.</p>
+              </section>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Achievements -->
+      <section id="rewards" class="section">
+        <div class="container">
+          <header class="section-heading reveal">
+            <span class="section-eyebrow">Rewards</span>
+            <h2 class="section-title">Achievements and badges</h2>
+            <p class="section-description">Badges unlock automatically from your real completed sessions.</p>
+          </header>
+
+          <div class="card reveal">
+            <div class="card-header card-header-split">
+              <div class="card-header-left">
+                <span class="card-icon card-icon-blue"><svg class="icon" aria-hidden="true"><use href="#icon-trophy" /></svg></span>
+                <div>
+                  <h3 class="card-title">Your badges</h3>
+                  <p class="card-subtitle" id="badgeSummary">0 of 6 unlocked</p>
+                </div>
+              </div>
+            </div>
+            <div class="badge-grid" id="badgeGrid"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Motivation and study tips -->
+      <section id="motivation" class="section">
+        <div class="container">
+          <header class="section-heading reveal">
+            <span class="section-eyebrow">Motivation Corner</span>
+            <h2 class="section-title">Stay inspired</h2>
+            <p class="section-description">A fresh quote and quick study tips to keep you going.</p>
+          </header>
+
+          <div class="card quote-card reveal">
+            <svg class="quote-mark icon" aria-hidden="true"><use href="#icon-sparkles" /></svg>
+            <p class="quote-text" id="quoteText" aria-live="polite">Small steps every day lead to big results.</p>
+            <button type="button" class="btn btn-outline btn-sm" id="newQuoteBtn">
+              <svg class="icon" aria-hidden="true"><use href="#icon-refresh" /></svg>
+              <span>New quote</span>
+            </button>
+          </div>
+
+          <div class="tips-grid">
+            <article class="card tip-card reveal">
+              <span class="tip-icon"><svg class="icon" aria-hidden="true"><use href="#icon-target" /></svg></span>
+              <h3>One task per Pomodoro</h3>
+              <p>Pick a single, specific task before pressing Start.</p>
+            </article>
+            <article class="card tip-card reveal">
+              <span class="tip-icon"><svg class="icon" aria-hidden="true"><use href="#icon-book" /></svg></span>
+              <h3>Active recall</h3>
+              <p>Close your notes and explain the topic in your own words.</p>
+            </article>
+            <article class="card tip-card reveal">
+              <span class="tip-icon"><svg class="icon" aria-hidden="true"><use href="#icon-coffee" /></svg></span>
+              <h3>Take real breaks</h3>
+              <p>Stand up, stretch and drink water. Skip the phone.</p>
+            </article>
+            <article class="card tip-card reveal">
+              <span class="tip-icon"><svg class="icon" aria-hidden="true"><use href="#icon-zap" /></svg></span>
+              <h3>Hardest first</h3>
+              <p>Tackle the toughest subject when your energy is highest.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Optional focus sounds -->
+      <section id="focus-env" class="section">
+        <div class="container">
+          <header class="section-heading reveal">
+            <span class="section-eyebrow">Optional</span>
+            <h2 class="section-title">Focus environment</h2>
+            <p class="section-description">Play a calming background sound while you study. Off by default. Turn it on only if it helps.</p>
+          </header>
+
+          <div class="card reveal">
+            <div class="ambient-grid" role="group" aria-label="Background sound">
+              <button type="button" class="ambient-option" data-sound="off" aria-pressed="true">
+                <span class="ambient-icon"><svg class="icon" aria-hidden="true"><use href="#icon-volume" /></svg></span>
+                <span class="ambient-name">Sound off</span>
+                <span class="ambient-desc">Silent study</span>
+              </button>
+              <button type="button" class="ambient-option" data-sound="rain" aria-pressed="false">
+                <span class="ambient-icon"><svg class="icon" aria-hidden="true"><use href="#icon-volume" /></svg></span>
+                <span class="ambient-name">Gentle Rain</span>
+                <span class="ambient-desc">Steady rainfall on the window</span>
+              </button>
+              <button type="button" class="ambient-option" data-sound="forest" aria-pressed="false">
+                <span class="ambient-icon"><svg class="icon" aria-hidden="true"><use href="#icon-volume" /></svg></span>
+                <span class="ambient-name">Forest Nature</span>
+                <span class="ambient-desc">Soft breeze and calm air</span>
+              </button>
+              <button type="button" class="ambient-option" data-sound="hum" aria-pressed="false">
+                <span class="ambient-icon"><svg class="icon" aria-hidden="true"><use href="#icon-volume" /></svg></span>
+                <span class="ambient-name">Soft Hum</span>
+                <span class="ambient-desc">Warm, calm background tone</span>
+              </button>
+            </div>
+            <p class="ambient-status" id="ambientStatus"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- All-time statistics -->
+      <section id="all-time" class="section">
+        <div class="container">
+          <header class="section-heading reveal">
+            <span class="section-eyebrow">All Time</span>
+            <h2 class="section-title">Study statistics</h2>
+            <p class="section-description">A complete productivity summary built from everything you have saved in FocusFlow.</p>
+          </header>
+
+          <div class="card reveal">
+            <div class="alltime-grid">
+              <div class="stat-tile">
+                <span class="stat-icon"><svg class="icon" aria-hidden="true"><use href="#icon-check" /></svg></span>
+                <span class="stat-value" id="totalSessions">0</span>
+                <span class="stat-label">All-time sessions</span>
+              </div>
+              <div class="stat-tile">
+                <span class="stat-icon"><svg class="icon" aria-hidden="true"><use href="#icon-clock" /></svg></span>
+                <span class="stat-value" id="allTimeMinutes">0m</span>
+                <span class="stat-label">Total focus time</span>
+              </div>
+              <div class="stat-tile">
+                <span class="stat-icon"><svg class="icon" aria-hidden="true"><use href="#icon-calendar" /></svg></span>
+                <span class="stat-value" id="allTimeDays">0</span>
+                <span class="stat-label">Active study days</span>
+              </div>
+              <div class="stat-tile">
+                <span class="stat-icon"><svg class="icon" aria-hidden="true"><use href="#icon-chart" /></svg></span>
+                <span class="stat-value" id="allTimeAverage">0</span>
+                <span class="stat-label">Average sessions per day</span>
+              </div>
+            </div>
+            <p class="alltime-summary" id="allTimeSummary"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- About -->
+      <section id="about" class="section">
+        <div class="container about-grid">
+          <div class="card about-card reveal">
+            <span class="section-eyebrow">About</span>
+            <h2 class="card-title about-title">Why FocusFlow?</h2>
+            <p>
+              FocusFlow helps college students study with the Pomodoro Technique: 25 minutes of deep focus, then a short break.
+              Your tasks, plans and stats stay private in your own browser. No account needed.
+            </p>
+            <p class="about-motto">Focus Better. Study Smarter. Achieve More.</p>
+          </div>
+
+          <div class="card team-card reveal">
+            <span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#icon-users" /></svg></span>
+            <h2 class="card-title">Project team</h2>
+            <ul class="team-list">
+              <li><strong>Team name:</strong> G6</li>
+              <li><strong>Members:</strong> Harjith Ragav, Pranshu Mishra, Nisha</li>
+              <li><strong>Course:</strong> B.Tech CSE</li>
+              <li><strong>Course code:</strong> CSE326</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <a href="#home" class="brand" aria-label="FocusFlow home">
+          <span class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#icon-timer" /></svg></span>
+          <span class="brand-text">
+            <span class="brand-name">FocusFlow</span>
+            <span class="brand-tagline">Pomodoro Study Timer</span>
+          </span>
+        </a>
+        <nav class="footer-nav" aria-label="Footer navigation">
+          <a href="#timer">Timer</a>
+          <a href="#tasks">Tasks</a>
+          <a href="#analytics">Analytics</a>
+          <a href="#planner">Planner</a>
+          <a href="#about">About</a>
+        </nav>
+        <p class="footer-copy">&copy; 2026 FocusFlow. Free for students.</p>
+      </div>
+    </footer>
+
+    <dialog class="modal" id="settingsDialog" aria-labelledby="settingsHeading">
+      <form id="settingsForm" class="settings-form" novalidate>
+        <div class="modal-head">
+          <div>
+            <span class="section-eyebrow">Preferences</span>
+            <h2 id="settingsHeading" class="card-title modal-title">Timer settings</h2>
+          </div>
+          <button type="button" class="btn btn-icon btn-icon-sm" id="closeSettingsBtn" aria-label="Close settings">
+            <svg class="icon" aria-hidden="true"><use href="#icon-x" /></svg>
+          </button>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="focusMinutesInput">Focus length (minutes)</label>
+            <input id="focusMinutesInput" name="focusMinutes" type="number" min="1" max="120" step="1" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="shortBreakInput">Short break (minutes)</label>
+            <input id="shortBreakInput" name="shortBreakMinutes" type="number" min="1" max="30" step="1" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="longBreakInput">Long break (minutes)</label>
+            <input id="longBreakInput" name="longBreakMinutes" type="number" min="1" max="60" step="1" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="sessionsInput">Sessions before a long break</label>
+            <input id="sessionsInput" name="sessionsBeforeLongBreak" type="number" min="2" max="8" step="1" inputmode="numeric" />
+          </div>
+          <div class="field field-full">
+            <label for="goalInput">Daily study goal (sessions)</label>
+            <input id="goalInput" name="dailyGoal" type="number" min="1" max="20" step="1" inputmode="numeric" />
+          </div>
+        </div>
+
+        <label class="toggle-row" for="soundInput">
+          <span class="toggle-text">
+            <svg class="icon" aria-hidden="true"><use href="#icon-zap" /></svg>
+            <span>Play a chime when a session ends</span>
+          </span>
+          <input id="soundInput" name="soundEnabled" type="checkbox" />
+        </label>
+
+        <p class="form-error" id="settingsError" role="alert"></p>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" id="cancelSettingsBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save settings</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
